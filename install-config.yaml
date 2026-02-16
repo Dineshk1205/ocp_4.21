@@ -1,0 +1,68 @@
+apiVersion: v1
+metadata:
+  name: kube4                                  # ClusterName
+baseDomain: kube.lab                           # Domain name
+
+controlPlane:
+  name: master
+  replicas: 3
+  hyperthreading: Enabled
+
+compute:
+  - name: worker
+    replicas: 1                             #Number of workers
+    hyperthreading: Enabled
+
+networking:
+  networkType: OVNKubernetes
+  clusterNetwork:
+    - cidr: 10.128.0.0/14
+      hostPrefix: 23
+  serviceNetwork:
+    - 172.30.0.0/16
+  machineNetwork:
+    - cidr: 192.168.60.0/24             # Machine network  - master &  worker nodes network range
+
+platform:
+  baremetal:
+    apiVIPs:
+      - 192.168.60.10                   # api VIP
+    ingressVIPs:
+      - 192.168.60.11                   # App* vIP
+
+pullSecret: '{"auths":{"bastion.kube.lab:8443":{"auth":"b3BlbnNoaWZ0OkNsb3VkQDEyMw=="}}}'                                      # Mirror regitry url , username and password 
+
+sshKey: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOr3ry2oOZeD5eotSIAoRwa90gkMSmcPGjUpyyZFrr/i root@bastion.kube.lab'               # SSH key 
+
+additionalTrustBundle: | 
+  -----BEGIN CERTIFICATE-----                                                                                                  # Mirror registry self signed certifitcate 
+  MIID1jCCAr6gAwIBAgIUYVHwZZb5HVNHr+3Wf3sJm3MY6FkwDQYJKoZIhvcNAQEL
+  BQAwajELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcgWW9y
+  azENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xGTAXBgNVBAMMEGJh
+  c3Rpb24ua3ViZS5sYWIwHhcNMjYwMjE1MTE0ODAyWhcNMjgxMjA1MTE0ODAyWjBq
+  MQswCQYDVQQGEwJVUzELMAkGA1UECAwCVkExETAPBgNVBAcMCE5ldyBZb3JrMQ0w
+  CwYDVQQKDARRdWF5MREwDwYDVQQLDAhEaXZpc2lvbjEZMBcGA1UEAwwQYmFzdGlv
+  bi5rdWJlLmxhYjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJ7DNr5O
+  aMogcf90Rhl6TUuah+wnMnZmIfSuI/kZBl1prMfaPVDUhp2b7AlgciFdyxF3uMZy
+  UND4WCv2ymgdIHQ6/LF+PVfZ6E18E9j35p8bZ0n+bnhB+Z7dpBxjficatx86+Jcg
+  2vIOy6KxC+pmHo8x2D1z+R6EZfPoL6pGw9WX9q3tu2GlI+lULRjcqNmgTQlSwnfq
+  ufXQyJyaienp+yM6GtUSJqgNh3TESjocC1bzMV8L1UbqQu0FDeuW5sovV7ZWlwv7
+  5TzXEk/lO3sZlJhnXMmlQ7pBiciaIqOLXeLD7XM0SaZz6DdnVjXv8ZP2vKZN8AzN
+  PiWN1E8TSaRVGEECAwEAAaN0MHIwCwYDVR0PBAQDAgLkMBMGA1UdJQQMMAoGCCsG
+  AQUFBwMBMBsGA1UdEQQUMBKCEGJhc3Rpb24ua3ViZS5sYWIwEgYDVR0TAQH/BAgw
+  BgEB/wIBATAdBgNVHQ4EFgQUbJprorkqxXaBh/Vx7YCXyciAonMwDQYJKoZIhvcN
+  AQELBQADggEBADTI7CSAREstZrYUuQQN5dAc0/a6JdnfbRc82xjQXjUY/Z604oJ7
+  37QnsvGtHNbWUIX64G5uFseytuhlfNIoBeRaYxGDogJEyKu0NoT67h9ju5ZDgm/j
+  D5e9IwWthj8qgFpyuWm3lQUu3BHevIixhllmOqbVemQYgU+/+1XXlsSPf7JOsRZH
+  JWc3eJjolZbLERRSZs75eDyXv2PsrJn/kO89HJ+Xh+XU/hWCvU0Fke9IMQgyYIYM
+  kSAErwbtcKeJwx8/+35TnPZxP3AUacQC45jNylAA+YTP8ZUJ0T1Ej5EGfC9oP5rG
+  /LUtc+YU4DCrJFxnNbDpWL0qtPSPq+Lm3bY=
+  -----END CERTIFICATE-----
+
+imageDigestSources:
+  - mirrors:
+      - bastion.kube.lab:8443/openshift/release-images                                                                     # Local Mirror regitry url 
+    source: quay.io/openshift-release-dev/ocp-release
+  - mirrors:
+      - bastion.kube.lab:8443/openshift/release                                                                            # Local Mirror regitry url 
+    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev

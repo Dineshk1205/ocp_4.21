@@ -1,0 +1,206 @@
+apiVersion: v1beta1
+kind: AgentConfig
+metadata:
+  name: kube4                                       # ClusterName 
+
+rendezvousIP: 192.168.60.13                         # master 0 used as bootstrap for cluster setup
+
+additionalNTPSources:
+  - 192.168.60.6                                    # NTP Server 
+
+hosts:
+  # ===== Controller 0 (Master + Worker) =====
+  - hostname: master0.kube4.kube.lab                         
+    role: master
+    rootDeviceHints:
+      deviceName: /dev/sda
+    interfaces:
+      - name: ens33                             
+        macAddress: 00:50:56:83:e5:c4
+      - name: ens34
+        macAddress: 00:50:56:83:71:55
+    networkConfig:
+      interfaces:
+        - name: bond0
+          type: bond
+          state: up
+          mtu: 1500
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.60.13
+                prefix-length: 24
+            dhcp: false
+          link-aggregation:
+            mode: active-backup
+            options:
+              primary: ens33
+              miimon: "100"
+            port:
+              - ens33
+              - ens34
+        - name: ens33
+          type: ethernet
+          state: up
+          mtu: 1500
+        - name: ens34
+          type: ethernet
+          state: up
+          mtu: 1500
+      dns-resolver:
+        config:
+          server:
+            - 192.168.60.5
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.60.1
+            next-hop-interface: bond0
+            table-id: 254
+
+  # ===== Controller 1 (Master + Worker) =====
+  - hostname: master1.kube4.kube.lab
+    role: master
+    rootDeviceHints:
+      deviceName: /dev/sda
+    interfaces:
+      - name: ens33
+        macAddress: 00:50:56:83:f6:49
+      - name: ens34
+        macAddress: 00:50:56:83:e1:d9
+    networkConfig:
+      interfaces:
+        - name: bond0
+          type: bond
+          state: up
+          mtu: 1500
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.60.14
+                prefix-length: 24
+            dhcp: false
+          link-aggregation:
+            mode: active-backup
+            options:
+              primary: ens33
+              miimon: "100"
+            port:
+              - ens33
+              - ens34
+        - name: ens33
+          type: ethernet
+          state: up
+          mtu: 1500
+        - name: ens34
+          type: ethernet
+          state: up
+          mtu: 1500
+      dns-resolver:
+        config:
+          server:
+            - 192.168.60.5
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.60.1
+            next-hop-interface: bond0
+            table-id: 254
+
+  # ===== Controller 2 (Master + Worker) =====
+  - hostname: master2.kube4.kube.lab
+    role: master
+    rootDeviceHints:
+      deviceName: /dev/sda
+    interfaces:
+      - name: ens33
+        macAddress: 00:50:56:83:8b:48
+      - name: ens34
+        macAddress: 00:50:56:83:cb:2b
+    networkConfig:
+      interfaces:
+        - name: bond0
+          type: bond
+          state: up
+          mtu: 1500
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.60.15
+                prefix-length: 24
+            dhcp: false
+          link-aggregation:
+            mode: active-backup
+            options:
+              primary: ens33
+              miimon: "100"
+            port:
+              - ens33
+              - ens34
+        - name: ens33
+          type: ethernet
+          state: up
+          mtu: 1500
+        - name: ens34
+          type: ethernet
+          state: up
+          mtu: 1500
+      dns-resolver:
+        config:
+          server:
+            - 192.168.60.5
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.60.1
+            next-hop-interface: bond0
+            table-id: 254
+
+  # ===== Compute 0 (Worker Only) =====
+  - hostname: worker0.kube4.kube.lab
+    role: worker
+    rootDeviceHints:
+      deviceName: /dev/sda
+    interfaces:
+      - name: ens33
+        macAddress: 00:50:56:83:fb:7f
+      - name: ens34
+        macAddress: 00:50:56:83:41:64
+    networkConfig:
+      interfaces:
+        - name: bond0
+          type: bond
+          state: up
+          mtu: 1500
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.60.16
+                prefix-length: 24
+            dhcp: false
+          link-aggregation:
+            mode: active-backup
+            options:
+              primary: ens33
+              miimon: "100"
+            port:
+              - ens33
+              - ens34
+        - name: ens33
+          type: ethernet
+          state: up
+          mtu: 1500
+        - name: ens34
+          type: ethernet
+          state: up
+          mtu: 1500
+      dns-resolver:
+        config:
+          server:
+            - 192.168.60.5
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.60.1
+            next-hop-interface: bond0
+            table-id: 254
